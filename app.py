@@ -1,11 +1,8 @@
 import gradio
-
-import tensorflow as tf
 from huggingface_hub import Repository
 
-from utils.utils import norm_crop, estimate_norm, inverse_estimate_norm, transform_landmark_points, get_lm, load_model_internal
-from networks.generator import get_generator
-from networks.layers import AdaIN,
+from utils.utils import norm_crop, estimate_norm, inverse_estimate_norm, transform_landmark_points, get_lm
+from networks.layers import AdaIN, AdaptiveAttention
 import numpy as np
 import cv2
 from scipy.ndimage import gaussian_filter
@@ -18,7 +15,8 @@ from options.swap_options import SwapOptions
 opt = SwapOptions().parse()
 
 
-retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50", private=True, use_auth_token="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")
+retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
+                         private=True, use_auth_token="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")
 RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
@@ -26,10 +24,12 @@ RetinaFace = load_model("retina_model/retinaface_res50.h5",
                                         "LandmarkHead": LandmarkHead,
                                         "ClassHead": ClassHead})
 
-arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf", private=True, use_auth_token="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")
+arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf",
+                      private=True, use_auth_token="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")
 ArcFace = load_model("arcface_model/arc_res50.h5")
 
-g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f", private=True, use_auth_token="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")
+g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f",
+                    private=True, use_auth_token="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")
 G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN, "AdaptiveAttention": AdaptiveAttention})
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
