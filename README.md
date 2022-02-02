@@ -1,7 +1,7 @@
 ---
-title: Face Swap Affa
-emoji: 😻
-colorFrom: indigo
+title: Face Swap AFFA
+emoji: 🧙
+colorFrom: purple
 colorTo: green
 sdk: gradio
 app_file: app.py
