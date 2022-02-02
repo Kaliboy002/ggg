@@ -2,7 +2,6 @@ import gradio
 
 import tensorflow as tf
 from huggingface_hub import Repository
-repo = Repository()
 
 from utils.utils import norm_crop, estimate_norm, inverse_estimate_norm, transform_landmark_points, get_lm, load_model_internal
 from networks.generator import get_generator
@@ -18,18 +17,19 @@ from options.swap_options import SwapOptions
 opt = SwapOptions().parse()
 
 
-#gpus = tf.config.experimental.list_physical_devices('GPU')
-#tf.config.set_visible_devices(gpus[opt.device_id], 'GPU')
-
-RetinaFace = load_model(opt.retina_path,
+retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50", private=True, use_auth_token="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")
+RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
                                         "BboxHead": BboxHead,
                                         "LandmarkHead": LandmarkHead,
                                         "ClassHead": ClassHead})
-ArcFace = load_model(opt.arcface_path)
 
-G = load_model_internal(opt.chkp_dir + opt.log_name + "/gen/", "gen", opt.load)
+arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf", private=True, use_auth_token="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")
+ArcFace = load_model("arcface_model/arc_res50.h5")
+
+g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f", private=True, use_auth_token="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")
+G = load_model("g_model/affa_f_demo.h5")
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
 blend_mask_base[100:240, 32:224] = 1
