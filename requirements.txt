@@ -4,3 +4,4 @@ opencv-python-headless
 scipy
 pillow
 scikit-image
+huggingface_hub
