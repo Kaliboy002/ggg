@@ -3,6 +3,7 @@ from huggingface_hub import Repository
 
 from utils.utils import norm_crop, estimate_norm, inverse_estimate_norm, transform_landmark_points, get_lm
 from networks.layers import AdaIN, AdaptiveAttention
+from tensorflow_addons.layers import InstanceNormalization
 import numpy as np
 import cv2
 from scipy.ndimage import gaussian_filter
@@ -30,7 +31,9 @@ ArcFace = load_model("arcface_model/arc_res50.h5")
 
 g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f",
                     private=True, use_auth_token="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")
-G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN, "AdaptiveAttention": AdaptiveAttention})
+G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN,
+                                                         "AdaptiveAttention": AdaptiveAttention,
+                                                         "InstanceNormalization": InstanceNormalization})
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
 blend_mask_base[100:240, 32:224] = 1
