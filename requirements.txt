@@ -1,0 +1,6 @@
+tensorflow
+tensorflow-addons
+opencv-python-headless
+scipy
+pillow
+scikit-image
