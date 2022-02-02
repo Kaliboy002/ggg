@@ -6,6 +6,7 @@ colorTo: green
 sdk: gradio
 app_file: app.py
 pinned: false
+license: cc-by-nc-sa-4.0
 ---
 
 # Configuration
