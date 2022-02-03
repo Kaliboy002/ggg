@@ -17,7 +17,7 @@ opt = SwapOptions().parse()
 
 
 retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
-                         private=True, use_auth_token="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")
+                         private=True, use_auth_token="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", git_user="felixrosberg")
 RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
