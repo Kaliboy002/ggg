@@ -17,7 +17,7 @@ opt = SwapOptions().parse()
 
 
 retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
-                         private=True, use_auth_token="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", git_user="felixrosberg")
+                         private=True, use_auth_token="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", git_user="felixrosberg")
 RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
@@ -26,11 +26,11 @@ RetinaFace = load_model("retina_model/retinaface_res50.h5",
                                         "ClassHead": ClassHead})
 
 arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf",
-                      private=True, use_auth_token="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")
+                      private=True, use_auth_token="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")
 ArcFace = load_model("arcface_model/arc_res50.h5")
 
 g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f",
-                    private=True, use_auth_token="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")
+                    private=True, use_auth_token="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")
 G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN,
                                                          "AdaptiveAttention": AdaptiveAttention,
                                                          "InstanceNormalization": InstanceNormalization})
@@ -101,9 +101,18 @@ def run_inference(target, source):
 
     return total_img
 
+description = "Performs subject agnostic identity transfer from a source face to all target faces."
+examples = [["elon_musk_example.jpg"], ["rick_astely_example.jpg"], ["10017.png"], ["9538.png"]]
+article="""
+Demo is based of recent research from my Ph.D work. Results expects to be published in the coming months.
+"""
 
 iface = gradio.Interface(run_inference,
                          [gradio.inputs.Image(shape=None),
                           gradio.inputs.Image(shape=None)],
-                         gradio.outputs.Image())
+                         gradio.outputs.Image(),
+                         title="Face Swap",
+                         description=description,
+                         examples=examples,
+                         article=article)
 iface.launch()
