@@ -17,7 +17,7 @@ opt = SwapOptions().parse()
 
 
 retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
-                         private=True, use_auth_token="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", git_user="felixrosberg")
+                         private=True, use_auth_token="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", git_user="felixrosberg")
 RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
@@ -26,11 +26,11 @@ RetinaFace = load_model("retina_model/retinaface_res50.h5",
                                         "ClassHead": ClassHead})
 
 arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf",
-                      private=True, use_auth_token="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")
+                      private=True, use_auth_token="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")
 ArcFace = load_model("arcface_model/arc_res50.h5")
 
 g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f",
-                    private=True, use_auth_token="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")
+                    private=True, use_auth_token="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")
 G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN,
                                                          "AdaptiveAttention": AdaptiveAttention,
                                                          "InstanceNormalization": InstanceNormalization})
