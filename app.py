@@ -14,6 +14,7 @@ from options.swap_options import SwapOptions
 
 # Invalidated!
 token = "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"
+print(secrets.model_fetch)
 
 opt = SwapOptions().parse()
 
