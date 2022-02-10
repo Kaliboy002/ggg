@@ -14,8 +14,7 @@ from retinaface.models import *
 from options.swap_options import SwapOptions
 
 # Invalidated!
-token = "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"
-print(os.environ)
+token = os.environ['model_fetch']
 
 opt = SwapOptions().parse()
 
