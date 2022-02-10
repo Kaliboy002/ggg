@@ -39,7 +39,7 @@ G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN,
                                                          "InstanceNormalization": InstanceNormalization})
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
-blend_mask_base[100:240, 32:224] = 1
+blend_mask_base[80:250, 32:224] = 1
 blend_mask_base = gaussian_filter(blend_mask_base, sigma=7)
 
 
