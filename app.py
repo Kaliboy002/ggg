@@ -1,5 +1,6 @@
 import gradio
 from huggingface_hub import Repository
+import os
 
 from utils.utils import norm_crop, estimate_norm, inverse_estimate_norm, transform_landmark_points, get_lm
 from networks.layers import AdaIN, AdaptiveAttention
@@ -14,7 +15,7 @@ from options.swap_options import SwapOptions
 
 # Invalidated!
 token = "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"
-print(secrets.model_fetch)
+print(os.environ)
 
 opt = SwapOptions().parse()
 
