@@ -13,7 +13,7 @@ from retinaface.models import *
 from options.swap_options import SwapOptions
 
 # Invalidated!
-token = "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"
+token = "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"
 
 opt = SwapOptions().parse()
 
