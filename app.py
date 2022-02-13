@@ -109,7 +109,7 @@ def run_inference(target, source):
         return None
 
 description = "Performs subject agnostic identity transfer from a source face to all target faces."
-examples = [["elon_musk_example.jpg", "rick_astely_example.jpg"], ["10017.png", "9538.png"]]
+examples = [["rick_astely_example.jpg", "elon_musk_example.jpg"], ["10017.png", "9538.png"]]
 article="""
 Demo is based of recent research from my Ph.D work. Results expects to be published in the coming months.
 """
