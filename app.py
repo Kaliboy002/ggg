@@ -135,7 +135,7 @@ Demo is based of recent research from my Ph.D work. Results expects to be publis
 """
 
 iface = gradio.Interface(run_inference,
-                         [gradio.inputs.Image(shape=None, label='Target', source='webcam'),
+                         [gradio.inputs.Image(shape=None, label='Target'),
                           gradio.inputs.Image(shape=None, label='Source'),
                           gradio.inputs.Slider(0, 100, default=80, label="Anonymization ratio (%)"),
                           gradio.inputs.CheckboxGroup(["compare", "anonymize"], label='Options')],
