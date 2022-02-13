@@ -13,7 +13,7 @@ from tensorflow.keras.models import load_model
 from options.swap_options import SwapOptions
 
 # Invalidated!
-token = "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"
+token = os.environ['model_fetch']
 
 opt = SwapOptions().parse()
 
@@ -44,17 +44,20 @@ blend_mask_base[80:250, 32:224] = 1
 blend_mask_base = gaussian_filter(blend_mask_base, sigma=7)
 
 
-def run_inference(target, source):
+def run_inference(target, source, slider, settings):
     try:
         source = np.array(source)
         target = np.array(target)
     
         # Prepare to load video
-        source_a = RetinaFace(np.expand_dims(source, axis=0)).numpy()[0]
-        source_h, source_w, _ = source.shape
-        source_lm = get_lm(source_a, source_w, source_h)
-        source_aligned = norm_crop(source, source_lm, image_size=256)
-        source_z = ArcFace.predict(np.expand_dims(tf.image.resize(source_aligned, [112, 112]) / 255.0, axis=0))
+        if "anonymize" not in settings:
+            source_a = RetinaFace(np.expand_dims(source, axis=0)).numpy()[0]
+            source_h, source_w, _ = source.shape
+            source_lm = get_lm(source_a, source_w, source_h)
+            source_aligned = norm_crop(source, source_lm, image_size=256)
+            source_z = ArcFace.predict(np.expand_dims(tf.image.resize(source_aligned, [112, 112]) / 255.0, axis=0))
+        else:
+            source_z = None
     
         # read frame
         im = target
@@ -79,6 +82,14 @@ def run_inference(target, source):
             # align the detected face
             M, pose_index = estimate_norm(lm_align, 256, "arcface", shrink_factor=1.0)
             im_aligned = cv2.warpAffine(im, M, (256, 256), borderValue=0.0)
+
+            if "anonymize" in settings:
+                source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+                anon_ratio = int(512 * (slider / 100))
+                anon_vector = np.ones(shape=(1, 512))
+                anon_vector[:, :anon_ratio] = -1
+                np.random.shuffle(anon_vector)
+                source_z *= anon_vector
     
             # face swap
             changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
@@ -97,7 +108,7 @@ def run_inference(target, source):
             blend_mask = np.expand_dims(blend_mask, axis=-1)
             total_img = (iim_aligned * blend_mask + total_img * (1 - blend_mask))
     
-        if opt.compare:
+        if "compare" in settings:
             total_img = np.concatenate((im / 255.0, total_img), axis=1)
     
         total_img = np.clip(total_img, 0, 1)
@@ -109,15 +120,25 @@ def run_inference(target, source):
         print(e)
         return None
 
-description = "Performs subject agnostic identity transfer from a source face to all target faces."
-examples = [["rick_astely_example.jpg", "elon_musk_example.jpg"], ["10017.png", "9538.png"]]
+
+description = "Performs subject agnostic identity transfer from a source face to all target faces. \n\n" \
+              "Options:\n" \
+              "compare returns the target image concatenated with the results.\n" \
+              "anonymize will ignore the source image and perform an identity permutation of target faces.\n" \
+              "\n" \
+              "Note, source image with too high resolution may not work properly!"
+examples = [["assets/rick.jpg", "assets/musk.jpg", 80, ["compare"]],
+            ["assets/girl_1.png", "assets/girl_0.png", 80, []],
+            ["assets/musk.jpg", "assets/musk.jpg", 30, ["anonymize"]]]
 article="""
 Demo is based of recent research from my Ph.D work. Results expects to be published in the coming months.
 """
 
 iface = gradio.Interface(run_inference,
-                         [gradio.inputs.Image(shape=None),
-                          gradio.inputs.Image(shape=None)],
+                         [gradio.inputs.Image(shape=None, label='Target', source='webcam'),
+                          gradio.inputs.Image(shape=None, label='Source'),
+                          gradio.inputs.Slider(0, 100, default=80, label="Anonymization ratio (%)"),
+                          gradio.inputs.CheckboxGroup(["compare", "anonymize"], label='Options')],
                          gradio.outputs.Image(),
                          title="Face Swap",
                          description=description,

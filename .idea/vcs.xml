@@ -2,5 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/arcface_model" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/g_model" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/retina_model" vcs="Git" />
   </component>
 </project>
