@@ -13,7 +13,7 @@ from tensorflow.keras.models import load_model
 from options.swap_options import SwapOptions
 
 # Invalidated!
-token = os.environ['model_fetch']
+token = "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"
 
 opt = SwapOptions().parse()
 
@@ -33,7 +33,7 @@ arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcfac
                       private=True, use_auth_token=token)
 ArcFace = load_model("arcface_model/arc_res50.h5")
 
-g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/affa_f",
+g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/faceswapmodel",
                     private=True, use_auth_token=token)
 G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN,
                                                          "AdaptiveAttention": AdaptiveAttention,
