@@ -143,5 +143,7 @@ iface = gradio.Interface(run_inference,
                          title="Face Swap",
                          description=description,
                          examples=examples,
-                         article=article)
+                         article=article,
+                         theme="dark-huggingface",
+                         layout="vertical)
 iface.launch()
