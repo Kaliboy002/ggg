@@ -1,5 +1,5 @@
 ---
-title: Face Swap AFFA
+title: Face Swap
 emoji: 🧙
 colorFrom: purple
 colorTo: green
