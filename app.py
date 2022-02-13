@@ -10,7 +10,6 @@ import cv2
 from scipy.ndimage import gaussian_filter
 
 from tensorflow.keras.models import load_model
-from retinaface.models import *
 from options.swap_options import SwapOptions
 
 # Invalidated!
@@ -21,6 +20,8 @@ opt = SwapOptions().parse()
 
 retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
                          private=True, use_auth_token=token, git_user="felixrosberg")
+                         
+from retina_model.models import *
 RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
