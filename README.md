@@ -1,6 +1,6 @@
 ---
 title: Face Swap
-emoji: 🧙🧙🧙🧙🧙🧙🧙🧙🧙🧙🧙
+emoji: 🧙🧙🧙🧙🧙🧙
 colorFrom: purple
 colorTo: green
 sdk: gradio
