@@ -12,7 +12,7 @@ from scipy.ndimage import gaussian_filter
 from tensorflow.keras.models import load_model
 from options.swap_options import SwapOptions
 
-# .
+# 
 token = os.environ['model_fetch']
 
 opt = SwapOptions().parse()
