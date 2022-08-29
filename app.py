@@ -33,9 +33,9 @@ arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcfac
                       private=True, use_auth_token=token)
 ArcFace = load_model("arcface_model/arc_res50.h5")
 
-g_repo = Repository(local_dir="g_model", clone_from="felixrosberg/faceswapmodel",
+g_repo = Repository(local_dir="g_model_c_hq", clone_from="felixrosberg/affa_config_c_hq",
                     private=True, use_auth_token=token)
-G = load_model("g_model/affa_f_demo.h5", custom_objects={"AdaIN": AdaIN,
+G = load_model("g_model_c_hq/generator_t_28.h5", custom_objects={"AdaIN": AdaIN,
                                                          "AdaptiveAttention": AdaptiveAttention,
                                                          "InstanceNormalization": InstanceNormalization})
 
