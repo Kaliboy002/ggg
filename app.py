@@ -99,10 +99,12 @@ def run_inference(target, source, slider, settings):
                 np.random.shuffle(anon_vector)
                 source_z *= anon_vector"""
                 
+                slider_weight = slider / 100
+                
                 target_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
                 source_z = IDP.predict(target_z)
                 
-                source_z = slider * source_z + (1 - slider) * target_z
+                source_z = slider_weight * source_z + (1 - slider_weight ) * target_z
     
             # face swap
             changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
