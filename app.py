@@ -48,7 +48,7 @@ IDP.load_weights("identity_permuter/id_permuter.h5")
 
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
-blend_mask_base[80:246, 32:224] = 1
+blend_mask_base[80:244, 32:224] = 1
 blend_mask_base = gaussian_filter(blend_mask_base, sigma=7)
 
 
