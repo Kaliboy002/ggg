@@ -99,8 +99,10 @@ def run_inference(target, source, slider, settings):
                 np.random.shuffle(anon_vector)
                 source_z *= anon_vector"""
                 
-                source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
-                source_z = IDP.predict(source_z)
+                target_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+                source_z = IDP.predict(target_z)
+                
+                source_z = slider * source_z + (1 - slider) * target_z
     
             # face swap
             changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
@@ -135,12 +137,12 @@ def run_inference(target, source, slider, settings):
 description = "Performs subject agnostic identity transfer from a source face to all target faces. \n\n" \
               "Options:\n" \
               "compare returns the target image concatenated with the results.\n" \
-              "anonymize will ignore the source image and perform an identity permutation of target faces.\n" \
+              "anonymize will ignore the source image and perform an identity permutation of target faces."
+              "NOTE: There is no guarantees with the anonymization process currently.\n" \
               "\n" \
               "Note, source image with too high resolution may not work properly!"
 examples = [["assets/rick.jpg", "assets/musk.jpg", 80, ["compare"]],
-            ["assets/girl_1.png", "assets/girl_0.png", 80, []],
-            ["assets/musk.jpg", "assets/musk.jpg", 30, ["anonymize"]]]
+            ["assets/musk.jpg", "assets/musk.jpg", 80, ["anonymize"]]]
 article="""
 Demo is based of recent research from my Ph.D work. Results expects to be published in the coming months.
 """
