@@ -159,6 +159,5 @@ iface = gradio.Interface(run_inference,
                          description=description,
                          examples=examples,
                          article=article,
-                         theme="dark-huggingface",
                          layout="vertical")
 iface.launch()
