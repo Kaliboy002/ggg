@@ -137,7 +137,7 @@ def run_inference(target, source, slider, settings):
 description = "Performs subject agnostic identity transfer from a source face to all target faces. \n\n" \
               "Options:\n" \
               "compare returns the target image concatenated with the results.\n" \
-              "anonymize will ignore the source image and perform an identity permutation of target faces."
+              "anonymize will ignore the source image and perform an identity permutation of target faces." \
               "NOTE: There is no guarantees with the anonymization process currently.\n" \
               "\n" \
               "Note, source image with too high resolution may not work properly!"
