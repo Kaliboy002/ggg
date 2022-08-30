@@ -40,7 +40,7 @@ G = load_model("g_model_c_hq/generator_t_28.h5", custom_objects={"AdaIN": AdaIN,
                                                          "InstanceNormalization": InstanceNormalization})
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
-blend_mask_base[80:250, 32:224] = 1
+blend_mask_base[80:246, 32:224] = 1
 blend_mask_base = gaussian_filter(blend_mask_base, sigma=7)
 
 
