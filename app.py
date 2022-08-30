@@ -39,6 +39,14 @@ G = load_model("g_model_c_hq/generator_t_28.h5", custom_objects={"AdaIN": AdaIN,
                                                          "AdaptiveAttention": AdaptiveAttention,
                                                          "InstanceNormalization": InstanceNormalization})
 
+permuter_repo = Repository(local_dir="identity_permuter", clone_from="felixrosberg/identitypermuter",
+                         private=True, use_auth_token=token, git_user="felixrosberg")
+                        
+from identity_permuter.id_permuter import identity_permuter
+IDP = identity_permuter(emb_size=32, min_arg=False)
+IDP.load_weights("identity_permuter/id_permuter.h5")
+
+
 blend_mask_base = np.zeros(shape=(256, 256, 1))
 blend_mask_base[80:246, 32:224] = 1
 blend_mask_base = gaussian_filter(blend_mask_base, sigma=7)
@@ -84,12 +92,15 @@ def run_inference(target, source, slider, settings):
             im_aligned = cv2.warpAffine(im, M, (256, 256), borderValue=0.0)
 
             if "anonymize" in settings:
-                source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+                """source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
                 anon_ratio = int(512 * (slider / 100))
                 anon_vector = np.ones(shape=(1, 512))
                 anon_vector[:, :anon_ratio] = -1
                 np.random.shuffle(anon_vector)
-                source_z *= anon_vector
+                source_z *= anon_vector"""
+                
+                source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+                source_z = IDP.predict(source_z)
     
             # face swap
             changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
