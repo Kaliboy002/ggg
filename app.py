@@ -173,7 +173,7 @@ def run_inference(target, source, slider, adv_slider, settings):
         total_img *= 255.0
         total_img = total_img.astype('uint8')
 
-        return total_img, 1.0
+        return total_img
     except Exception as e:
         print(e)
         return None
