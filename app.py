@@ -17,11 +17,11 @@ token = os.environ['model_fetch']
 
 opt = SwapOptions().parse()
 
-
 retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
                          private=True, use_auth_token=token, git_user="felixrosberg")
-                         
+
 from retina_model.models import *
+
 RetinaFace = load_model("retina_model/retinaface_res50.h5",
                         custom_objects={"FPN": FPN,
                                         "SSH": SSH,
@@ -32,31 +32,38 @@ RetinaFace = load_model("retina_model/retinaface_res50.h5",
 arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf",
                       private=True, use_auth_token=token)
 ArcFace = load_model("arcface_model/arc_res50.h5")
+ArcFaceE = load_model("arcface_model/arc_res50e.h5")
 
 g_repo = Repository(local_dir="g_model_c_hq", clone_from="felixrosberg/affa_config_c_hq",
                     private=True, use_auth_token=token)
 G = load_model("g_model_c_hq/generator_t_28.h5", custom_objects={"AdaIN": AdaIN,
-                                                         "AdaptiveAttention": AdaptiveAttention,
-                                                         "InstanceNormalization": InstanceNormalization})
+                                                                 "AdaptiveAttention": AdaptiveAttention,
+                                                                 "InstanceNormalization": InstanceNormalization})
+
+r_repo = Repository(local_dir="reconstruction_attack", clone_from="felixrosberg/reconstruction_attack",
+                    private=True, use_auth_token=token)
+R = load_model("reconstruction_attack/reconstructor_42.h5", custom_objects={"AdaIN": AdaIN,
+                                                                            "AdaptiveAttention": AdaptiveAttention,
+                                                                            "InstanceNormalization": InstanceNormalization})
 
 permuter_repo = Repository(local_dir="identity_permuter", clone_from="felixrosberg/identitypermuter",
-                         private=True, use_auth_token=token, git_user="felixrosberg")
-                        
+                           private=True, use_auth_token=token, git_user="felixrosberg")
+
 from identity_permuter.id_permuter import identity_permuter
+
 IDP = identity_permuter(emb_size=32, min_arg=False)
 IDP.load_weights("identity_permuter/id_permuter.h5")
-
 
 blend_mask_base = np.zeros(shape=(256, 256, 1))
 blend_mask_base[80:244, 32:224] = 1
 blend_mask_base = gaussian_filter(blend_mask_base, sigma=7)
 
 
-def run_inference(target, source, slider, settings):
+def run_inference(target, source, slider, adv_slider, settings):
     try:
         source = np.array(source)
         target = np.array(target)
-    
+
         # Prepare to load video
         if "anonymize" not in settings:
             source_a = RetinaFace(np.expand_dims(source, axis=0)).numpy()[0]
@@ -66,18 +73,18 @@ def run_inference(target, source, slider, settings):
             source_z = ArcFace.predict(np.expand_dims(tf.image.resize(source_aligned, [112, 112]) / 255.0, axis=0))
         else:
             source_z = None
-    
+
         # read frame
         im = target
         im_h, im_w, _ = im.shape
         im_shape = (im_w, im_h)
-    
+
         detection_scale = im_w // 640 if im_w > 640 else 1
-    
+
         faces = RetinaFace(np.expand_dims(cv2.resize(im,
                                                      (im_w // detection_scale,
                                                       im_h // detection_scale)), axis=0)).numpy()
-    
+
         total_img = im / 255.0
         for annotation in faces:
             lm_align = np.array([[annotation[4] * im_w, annotation[5] * im_h],
@@ -86,50 +93,85 @@ def run_inference(target, source, slider, settings):
                                  [annotation[10] * im_w, annotation[11] * im_h],
                                  [annotation[12] * im_w, annotation[13] * im_h]],
                                 dtype=np.float32)
-    
+
             # align the detected face
             M, pose_index = estimate_norm(lm_align, 256, "arcface", shrink_factor=1.0)
             im_aligned = cv2.warpAffine(im, M, (256, 256), borderValue=0.0)
 
-            if "anonymize" in settings:
+            if "adversarial defense" in settings:
+                eps = adv_slider / 200
+                with tf.GradientTape() as tape:
+                    tape.watch(im_aligned)
+
+                    X_z = ArcFaceE(tf.image.resize((im_aligned + 1) / 2, [112, 112]))
+                    output = R([im_aligned, X_z])
+
+                    loss = tf.reduce_mean(tf.abs(target - output))
+
+                gradient = tf.sign(tape.gradient(loss, im_aligned))
+
+                adv_x = im_aligned + eps * gradient
+                im_aligned = tf.clip_by_value(adv_x, -1, 1)
+
+            if "anonymize" in settings and "reconstruction attack" not in settings:
                 """source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
                 anon_ratio = int(512 * (slider / 100))
                 anon_vector = np.ones(shape=(1, 512))
                 anon_vector[:, :anon_ratio] = -1
                 np.random.shuffle(anon_vector)
                 source_z *= anon_vector"""
-                
+
                 slider_weight = slider / 100
-                
+
                 target_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
                 source_z = IDP.predict(target_z)
-                
-                source_z = slider_weight * source_z + (1 - slider_weight ) * target_z
-    
+
+                source_z = slider_weight * source_z + (1 - slider_weight) * target_z
+
+            if "reconstruction attack" in settings:
+                source_z = ArcFaceE.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+
             # face swap
-            changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
-                                           source_z])
-            changed_face = (changed_face_cage[0] + 1) / 2
-    
-            # get inverse transformation landmarks
-            transformed_lmk = transform_landmark_points(M, lm_align)
-    
-            # warp image back
-            iM, _ = inverse_estimate_norm(lm_align, transformed_lmk, 256, "arcface", shrink_factor=1.0)
-            iim_aligned = cv2.warpAffine(changed_face, iM, im_shape, borderValue=0.0)
-    
-            # blend swapped face with target image
-            blend_mask = cv2.warpAffine(blend_mask_base, iM, im_shape, borderValue=0.0)
-            blend_mask = np.expand_dims(blend_mask, axis=-1)
-            total_img = (iim_aligned * blend_mask + total_img * (1 - blend_mask))
-    
+            if "reconstruction attack" not in settings:
+                changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
+                                               source_z])
+                changed_face = (changed_face_cage[0] + 1) / 2
+
+                # get inverse transformation landmarks
+                transformed_lmk = transform_landmark_points(M, lm_align)
+
+                # warp image back
+                iM, _ = inverse_estimate_norm(lm_align, transformed_lmk, 256, "arcface", shrink_factor=1.0)
+                iim_aligned = cv2.warpAffine(changed_face, iM, im_shape, borderValue=0.0)
+
+                # blend swapped face with target image
+                blend_mask = cv2.warpAffine(blend_mask_base, iM, im_shape, borderValue=0.0)
+                blend_mask = np.expand_dims(blend_mask, axis=-1)
+                total_img = (iim_aligned * blend_mask + total_img * (1 - blend_mask))
+            else:
+                changed_face_cage = R.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
+                                               source_z])
+                changed_face = (changed_face_cage[0] + 1) / 2
+
+                # get inverse transformation landmarks
+                transformed_lmk = transform_landmark_points(M, lm_align)
+
+                # warp image back
+                iM, _ = inverse_estimate_norm(lm_align, transformed_lmk, 256, "arcface", shrink_factor=1.0)
+                iim_aligned = cv2.warpAffine(changed_face, iM, im_shape, borderValue=0.0)
+
+                # blend swapped face with target image
+                blend_mask = cv2.warpAffine(blend_mask_base, iM, im_shape, borderValue=0.0)
+                blend_mask = np.expand_dims(blend_mask, axis=-1)
+                total_img = (iim_aligned * blend_mask + total_img * (1 - blend_mask))
+
         if "compare" in settings:
             total_img = np.concatenate((im / 255.0, total_img), axis=1)
-    
+
         total_img = np.clip(total_img, 0, 1)
         total_img *= 255.0
         total_img = total_img.astype('uint8')
-    
+
         return total_img
     except Exception as e:
         print(e)
@@ -143,17 +185,22 @@ description = "Performs subject agnostic identity transfer from a source face to
               "NOTE: There is no guarantees with the anonymization process currently.\n" \
               "\n" \
               "Note, source image with too high resolution may not work properly!"
-examples = [["assets/rick.jpg", "assets/musk.jpg", 80, ["compare"]],
-            ["assets/musk.jpg", "assets/musk.jpg", 80, ["anonymize"]]]
-article="""
+examples = [["assets/rick.jpg", "assets/musk.jpg", 100, ["compare"]],
+            ["assets/musk.jpg", "assets/musk.jpg", 100, ["anonymize"]]]
+article = """
 Demo is based of recent research from my Ph.D work. Results expects to be published in the coming months.
 """
 
 iface = gradio.Interface(run_inference,
                          [gradio.inputs.Image(shape=None, label='Target'),
                           gradio.inputs.Image(shape=None, label='Source'),
-                          gradio.inputs.Slider(0, 100, default=80, label="Anonymization ratio (%)"),
-                          gradio.inputs.CheckboxGroup(["compare", "anonymize"], label='Options')],
+                          gradio.inputs.Slider(0, 100, default=100, label="Anonymization ratio (%)"),
+                          gradio.inputs.Slider(0, 100, default=100, label="Adversarial defense ratio (%)"),
+                          gradio.inputs.CheckboxGroup(["compare",
+                                                       "anonymize",
+                                                       "reconstruction attack",
+                                                       "adversarial defense"],
+                                                      label='Options')],
                          gradio.outputs.Image(),
                          title="Face Swap",
                          description=description,
