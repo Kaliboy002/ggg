@@ -173,7 +173,7 @@ def run_inference(target, source, slider, adv_slider, settings):
         total_img *= 255.0
         total_img = total_img.astype('uint8')
 
-        return total_img
+        return total_img, 1.0
     except Exception as e:
         print(e)
         return None
@@ -202,7 +202,7 @@ iface = gradio.Interface(run_inference,
                                                        "reconstruction attack",
                                                        "adversarial defense"],
                                                       label='Options')],
-                         gradio.outputs.Image(),
+                         [gradio.outputs.Image(), gradio.outputs.Number()],
                          title="Face Swap",
                          description=description,
                          examples=examples,
