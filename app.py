@@ -96,22 +96,23 @@ def run_inference(target, source, slider, adv_slider, settings):
 
             # align the detected face
             M, pose_index = estimate_norm(lm_align, 256, "arcface", shrink_factor=1.0)
-            im_aligned = cv2.warpAffine(im, M, (256, 256), borderValue=0.0)
+            im_aligned = (cv2.warpAffine(im, M, (256, 256), borderValue=0.0) - 127.5) / 127.5
 
             if "adversarial defense" in settings:
                 eps = adv_slider / 200
+                X = tf.convert_to_tensor(np.expand_dims(im_aligned, axis=0))
                 with tf.GradientTape() as tape:
-                    tape.watch(im_aligned)
+                    tape.watch(X)
 
-                    X_z = ArcFaceE(tf.image.resize((im_aligned + 1) / 2, [112, 112]))
-                    output = R([im_aligned, X_z])
+                    X_z = ArcFaceE(tf.image.resize(X * 0.5 + 0.5, [112, 112]))
+                    output = R([X, X_z])
 
-                    loss = tf.reduce_mean(tf.abs(target - output))
+                    loss = tf.reduce_mean(tf.abs(0 - output))
 
-                gradient = tf.sign(tape.gradient(loss, im_aligned))
+                gradient = tf.sign(tape.gradient(loss, X))
 
-                adv_x = im_aligned + eps * gradient
-                im_aligned = tf.clip_by_value(adv_x, -1, 1)
+                adv_x = X + eps * gradient
+                im_aligned = tf.clip_by_value(adv_x, -1, 1)[0]
 
             if "anonymize" in settings and "reconstruction attack" not in settings:
                 """source_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
@@ -123,19 +124,19 @@ def run_inference(target, source, slider, adv_slider, settings):
 
                 slider_weight = slider / 100
 
-                target_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+                target_z = ArcFace.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) * 0.5 + 0.5, axis=0))
                 source_z = IDP.predict(target_z)
 
                 source_z = slider_weight * source_z + (1 - slider_weight) * target_z
 
             if "reconstruction attack" in settings:
-                source_z = ArcFaceE.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) / 255.0, axis=0))
+                source_z = ArcFaceE.predict(np.expand_dims(tf.image.resize(im_aligned, [112, 112]) * 0.5 + 0.5, axis=0))
 
             # face swap
             if "reconstruction attack" not in settings:
-                changed_face_cage = G.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
+                changed_face_cage = G.predict([np.expand_dims(im_aligned, axis=0),
                                                source_z])
-                changed_face = (changed_face_cage[0] + 1) / 2
+                changed_face = changed_face_cage[0] * 0.5 + 0.5
 
                 # get inverse transformation landmarks
                 transformed_lmk = transform_landmark_points(M, lm_align)
@@ -149,9 +150,9 @@ def run_inference(target, source, slider, adv_slider, settings):
                 blend_mask = np.expand_dims(blend_mask, axis=-1)
                 total_img = (iim_aligned * blend_mask + total_img * (1 - blend_mask))
             else:
-                changed_face_cage = R.predict([np.expand_dims((im_aligned - 127.5) / 127.5, axis=0),
+                changed_face_cage = R.predict([np.expand_dims(im_aligned, axis=0),
                                                source_z])
-                changed_face = (changed_face_cage[0] + 1) / 2
+                changed_face = changed_face_cage[0] * 0.5 + 0.5
 
                 # get inverse transformation landmarks
                 transformed_lmk = transform_landmark_points(M, lm_align)
