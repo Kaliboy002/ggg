@@ -185,8 +185,8 @@ description = "Performs subject agnostic identity transfer from a source face to
               "NOTE: There is no guarantees with the anonymization process currently.\n" \
               "\n" \
               "Note, source image with too high resolution may not work properly!"
-examples = [["assets/rick.jpg", "assets/musk.jpg", 100, ["compare"]],
-            ["assets/musk.jpg", "assets/musk.jpg", 100, ["anonymize"]]]
+examples = [["assets/rick.jpg", "assets/musk.jpg", 100, 10, ["compare"]],
+            ["assets/musk.jpg", "assets/musk.jpg", 100, 10, ["anonymize"]]]
 article = """
 Demo is based of recent research from my Ph.D work. Results expects to be published in the coming months.
 """
