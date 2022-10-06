@@ -180,12 +180,14 @@ def run_inference(target, source, slider, adv_slider, settings):
 
 
 description = "Performs subject agnostic identity transfer from a source face to all target faces. \n\n" \
-              "Options:\n" \
-              "compare returns the target image concatenated with the results.\n" \
-              "anonymize will ignore the source image and perform an identity permutation of target faces. " \
-              "NOTE: There is no guarantees with the anonymization process currently.\n" \
+              "Options:\n\n" \
+              "-Compare returns the target image concatenated with the results.\n\n" \
+              "-Anonymize will ignore the source image and perform an identity permutation of target faces.\n\n" \
+              "-Reconstruction attack will attempt to invert the face swap or the anonymization.\n\n" \
+              "-Adversarial defense will add a permutation noise that disrupts the reconstruction attack.\n\n" \
+              "NOTE: There is no guarantees with the anonymization process currently.\n\n" \
               "\n" \
-              "Note, source image with too high resolution may not work properly!"
+              "NOTE, source image with too high resolution may not work properly!"
 examples = [["assets/rick.jpg", "assets/musk.jpg", 100, 10, ["compare"]],
             ["assets/musk.jpg", "assets/musk.jpg", 100, 10, ["anonymize"]]]
 article = """
