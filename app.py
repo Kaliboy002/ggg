@@ -18,8 +18,7 @@ token = os.environ['model_fetch']
 
 opt = SwapOptions().parse()
 
-retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
-                         private=True, use_auth_token=token)
+retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50", use_auth_token=token)
 
 from retina_model.models import *
 
@@ -30,25 +29,21 @@ RetinaFace = load_model("retina_model/retinaface_res50.h5",
                                         "LandmarkHead": LandmarkHead,
                                         "ClassHead": ClassHead})
 
-arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf",
-                      private=True, use_auth_token=token)
+arc_repo = Repository(local_dir="arcface_model", clone_from="felixrosberg/arcface_tf", use_auth_token=token)
 ArcFace = load_model("arcface_model/arc_res50.h5")
 ArcFaceE = load_model("arcface_model/arc_res50e.h5")
 
-g_repo = Repository(local_dir="g_model_c_hq", clone_from="felixrosberg/affa_config_c_hq",
-                    private=True, use_auth_token=token)
+g_repo = Repository(local_dir="g_model_c_hq", clone_from="felixrosberg/affa_config_c_hq", use_auth_token=token)
 G = load_model("g_model_c_hq/generator_t_28.h5", custom_objects={"AdaIN": AdaIN,
                                                                  "AdaptiveAttention": AdaptiveAttention,
                                                                  "InstanceNormalization": InstanceNormalization})
 
-r_repo = Repository(local_dir="reconstruction_attack", clone_from="felixrosberg/reconstruction_attack",
-                    private=True, use_auth_token=token)
+r_repo = Repository(local_dir="reconstruction_attack", clone_from="felixrosberg/reconstruction_attack", use_auth_token=token)
 R = load_model("reconstruction_attack/reconstructor_42.h5", custom_objects={"AdaIN": AdaIN,
                                                                             "AdaptiveAttention": AdaptiveAttention,
                                                                             "InstanceNormalization": InstanceNormalization})
 
-permuter_repo = Repository(local_dir="identity_permuter", clone_from="felixrosberg/identitypermuter",
-                           private=True, use_auth_token=token, git_user="felixrosberg")
+permuter_repo = Repository(local_dir="identity_permuter", clone_from="felixrosberg/identitypermuter", use_auth_token=token, git_user="felixrosberg")
 
 from identity_permuter.id_permuter import identity_permuter
 
