@@ -1,5 +1,5 @@
 import gradio
-from huggingface_hub import Repository, duplicate_space
+from huggingface_hub import Repository
 import os
 
 from utils.utils import norm_crop, estimate_norm, inverse_estimate_norm, transform_landmark_points, get_lm
@@ -18,8 +18,8 @@ token = os.environ['model_fetch']
 
 opt = SwapOptions().parse()
 
-retina_repo = duplicate_space(to_id="retina_model", from_id="felixrosberg/retinaface_resnet50",
-                         private=True, token=token)
+retina_repo = Repository(local_dir="retina_model", clone_from="felixrosberg/retinaface_resnet50",
+                         private=True, use_auth_token=token)
 
 from retina_model.models import *
 
