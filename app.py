@@ -1,4 +1,4 @@
-import gradio
+import gradio as gr
 from huggingface_hub import Repository
 import os
 
@@ -275,6 +275,8 @@ with gr.Blocks(theme=theme) as blk_demo:
                                                label='Anonymization ratio (%)')
                             mrg_in = gr.Slider(0, 100, value=100,
                                                label='Adversarial defense ratio (%)')
+                gr.Examples(examples=[["assets/musk.jpg"], ["assets/rick.jpg"]],
+                            inputs=trg_in)
             with gr.Column():
                 with gr.Box():
                     ano_out = gr.Image(type="pil", label='Output').style(height=300)
