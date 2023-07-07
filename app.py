@@ -260,21 +260,21 @@ with gr.Blocks(theme=theme) as blk_demo:
                     trg_in = gr.Image(type="pil", label='Target').style(height=300)
                     src_in = gr.Image(type="pil", label='Source').style(height=300)
                 with gr.Row():
-                        b1 = gr.Button("Face Swap")
+                    b1 = gr.Button("Face Swap")
                 with gr.Row():
-                        with gr.Accordion("Options", open=False):
-                            chk_in = gr.CheckboxGroup(["Compare",
-                                                       "Anonymize",
-                                                       "Reconstruction Attack",
-                                                       "Adversarial Defense"],
-                                                      label="Mode",
-                                                      info="Anonymize mode? "
-                                                           "Apply reconstruction attack? "
-                                                           "Apply defense against reconstruction attack?")
-                            def_in = gr.Slider(0, 100, value=100,
-                                               label='Anonymization ratio (%)')
-                            mrg_in = gr.Slider(0, 100, value=100,
-                                               label='Adversarial defense ratio (%)')
+                    with gr.Accordion("Options", open=False):
+                        chk_in = gr.CheckboxGroup(["Compare",
+                                                   "Anonymize",
+                                                   "Reconstruction Attack",
+                                                   "Adversarial Defense"],
+                                                  label="Mode",
+                                                  info="Anonymize mode? "
+                                                       "Apply reconstruction attack? "
+                                                       "Apply defense against reconstruction attack?")
+                        def_in = gr.Slider(0, 100, value=100,
+                                           label='Anonymization ratio (%)')
+                        mrg_in = gr.Slider(0, 100, value=100,
+                                           label='Adversarial defense ratio (%)')
                 gr.Examples(examples=[["assets/musk.jpg"], ["assets/rick.jpg"]],
                             inputs=trg_in)
             with gr.Column():
@@ -282,7 +282,6 @@ with gr.Blocks(theme=theme) as blk_demo:
                     ano_out = gr.Image(type="pil", label='Output').style(height=300)
 
     b1.click(run_inference, inputs=[trg_in, src_in, def_in, mrg_in, chk_in], outputs=[ano_out])
-
 """iface = gradio.Interface(run_inference,
                          [gradio.Image(shape=None, type="pil", label='Target'),
                           gradio.Image(shape=None, type="pil", label='Source'),
