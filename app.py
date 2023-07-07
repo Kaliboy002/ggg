@@ -281,8 +281,8 @@ with gr.Blocks(theme=theme) as blk_demo:
                 with gr.Box():
                     ano_out = gr.Image(type="pil", label='Output').style(height=300)
 
-b1.click(run_inference, inputs=[trg_in, src_in, def_in, mrg_in, chk_in],
-                 outputs=[ano_out])
+    b1.click(run_inference, inputs=[trg_in, src_in, def_in, mrg_in, chk_in],
+                     outputs=[ano_out])
 
 """iface = gradio.Interface(run_inference,
                          [gradio.Image(shape=None, type="pil", label='Target'),
