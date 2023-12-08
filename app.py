@@ -257,8 +257,8 @@ with gr.Blocks(theme=theme) as blk_demo:
     with gr.Row():
         with gr.Column():
             with gr.Group():
-                trg_in = gr.Image(shape=None, type="pil", label='Target').style(height=300)
-                src_in = gr.Image(shape=None, type="pil", label='Source').style(height=300)
+                trg_in = gr.Image(type="pil", label='Target').style(height=300)
+                src_in = gr.Image(type="pil", label='Source').style(height=300)
             with gr.Row():
                 b1 = gr.Button("Face Swap")
             with gr.Row():
