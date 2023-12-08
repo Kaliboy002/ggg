@@ -256,7 +256,7 @@ with gr.Blocks(theme=theme) as blk_demo:
     gr.Markdown(value="# Face Dancer")
     with gr.Row():
         with gr.Column():
-            with gr.Box():
+            with gr.Group():
                 trg_in = gr.Image(shape=None, type="pil", label='Target').style(height=300)
                 src_in = gr.Image(shape=None, type="pil", label='Source').style(height=300)
             with gr.Row():
@@ -278,7 +278,7 @@ with gr.Blocks(theme=theme) as blk_demo:
             gr.Examples(examples=[["assets/musk.jpg"], ["assets/rick.jpg"]],
                         inputs=trg_in)
         with gr.Column():
-            with gr.Box():
+            with gr.Group():
                 ano_out = gr.Image(type="pil", label='Output').style(height=300)
 
     b1.click(run_inference, inputs=[trg_in, src_in, def_in, mrg_in, chk_in], outputs=ano_out)
