@@ -4,6 +4,7 @@ emoji: 🧙🧙🧙🧙🧙🧙🧙🧙
 colorFrom: purple
 colorTo: green
 sdk: gradio
+sdk_version: 4.29.0
 app_file: app.py
 pinned: false
 license: cc-by-nc-sa-4.0
