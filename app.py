@@ -59,15 +59,104 @@ theme = gr.themes.Base(
         primary_hue="neutral",
         radius_size="none",
     ).set(
-        body_text_color_dark='*neutral_800',
         embed_radius='*radius_xxs',
+
+        body_text_color='*neutral_800',
+        body_text_color_dark='*neutral_800',
+
+        body_text_color_subdued="*neutral_400",
+        body_text_color_subdued_dark="*neutral_400",
+
         button_primary_background_fill='*primary_700',
+        button_primary_background_fill_dark='*primary_700',
+
         button_primary_background_fill_hover='*primary_400',
         button_primary_background_fill_hover_dark='*primary_400',
+
+        button_primary_border_color='*primary_200',
         button_primary_border_color_dark='*primary_200',
-        button_primary_text_color='*primary_50',
-        button_primary_text_color_dark='*primary_50',
-        button_primary_text_color_hover='*primary_50'
+
+        button_primary_text_color='black',
+        button_primary_text_color_dark='black',
+
+        button_secondary_text_color="*neutral_700",
+        button_secondary_text_color_dark="*neutral_700",
+
+        button_primary_text_color_hover='*primary_50',
+        button_primary_text_color_hover_dark='*primary_50',
+
+        button_secondary_background_fill="*neutral_200",
+        button_secondary_background_fill_dark="*neutral_200",
+
+        input_background_fill="*neutral_100",
+        input_background_fill_dark="*neutral_100",
+
+        input_background_fill_focus="*secondary_500",
+        input_background_fill_focus_dark="*secondary_500",
+
+        body_background_fill="white",
+        body_background_fill_dark="white",
+
+        background_fill_secondary="*neutral_50",
+        background_fill_secondary_dark="*neutral_50",
+
+        border_color_accent="*primary_300",
+        border_color_accent_dark="*primary_300",
+
+        border_color_primary="*neutral_700",
+        border_color_primary_dark="*neutral_700",
+
+        color_accent="*primary_500",
+        color_accent_soft="*primary_50",
+        color_accent_soft_dark="*primary_50",
+
+        background_fill_primary="white",
+        background_fill_primary_dark="white",
+
+        block_title_background_fill="white",
+        block_title_background_fill_dark="white",
+
+        block_background_fill="white",
+        block_background_fill_dark="white",
+
+        block_label_border_color="*neutral_200",
+        block_label_border_color_dark="*neutral_200",
+
+        block_label_text_color="*neutral_500",
+        block_label_text_color_dark="*neutral_500",
+
+        block_info_text_color="*neutral_400",
+        block_info_text_color_dark="*neutral_400",
+
+        block_border_color="*neutral_700",
+        block_border_color_dark="*neutral_700",
+
+        block_border_width="1px",
+        block_border_width_dark="1px",
+
+        block_label_background_fill="white",
+        block_label_background_fill_dark="white",
+
+        block_label_border_width="1px",
+        block_label_border_width_dark="1px",
+
+        block_title_text_color="*neutral_500",
+        block_title_text_color_dark="*neutral_500",
+
+        checkbox_background_color="white",
+        checkbox_background_color_dark="white",
+
+        checkbox_background_color_focus="white",
+        checkbox_background_color_focus_dark="white",
+
+        checkbox_background_color_hover="white",
+        checkbox_background_color_hover_dark="white",
+
+        panel_background_fill="*neutral_50",
+        panel_background_fill_dark="*neutral_50",
+
+        slider_color="black",
+        slider_color_dark="black",
     )
 
 
