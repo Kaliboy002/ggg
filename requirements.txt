@@ -1,5 +1,5 @@
 tensorflow
-tensorflow-addons==0.17.1
+tensorflow-addons
 opencv-python-headless
 scipy
 pillow
