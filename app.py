@@ -210,9 +210,9 @@ Demo is based of recent research from my Ph.D work. Results expects to be publis
 """
 
 with gr.Blocks(theme=theme) as blk_demo:
-    gr.Markdown(value="# Face Dancer \n\n"
-                      "## Paper: [FaceDancer: Pose- and Occlusion-Aware High Fidelity Face Swapping](https://arxiv.org/abs/2210.10473) \n"
-                      "## Check out the code [here](https://github.com/felixrosberg/FaceDancer)")
+    gr.Markdown(value="# Face Dancer")
+    gr.Markdown(value="# Paper: [FaceDancer: Pose- and Occlusion-Aware High Fidelity Face Swapping](https://arxiv.org/abs/2210.10473)")
+    gr.Markdown(value="# Check out the code [here](https://github.com/felixrosberg/FaceDancer)")
     with gr.Row():
         with gr.Column():
             with gr.Group():
