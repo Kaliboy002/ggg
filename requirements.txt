@@ -1,3 +1,4 @@
+gradio
 tensorflow
 tensorflow-addons
 opencv-python-headless
@@ -5,3 +6,4 @@ scipy
 pillow
 scikit-image
 huggingface_hub
+requests
